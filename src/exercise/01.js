@@ -3,16 +3,36 @@
 
 import * as React from 'react'
 
-const countReducer = (state, newState) => ({...state, ...newState})
+const countReducer = (state, newState) => {
+  if (typeof newState === 'function') {
+    return {...state, ...newState(state)}
+  }
+
+  return {...state, ...newState}
+}
 
 function Counter({initialCount = 0, step = 1}) {
   const [state, setState] = React.useReducer(countReducer, {
     count: initialCount,
+    iShouldNotGetLost: 'here I am',
   })
-  const {count} = state
-  const increment = () => setState({count: count + step})
 
-  return <button onClick={increment}>{count}</button>
+  const {count} = state
+  const incrementWithFunction = () =>
+    setState(currentState => ({count: currentState.count + step}))
+
+  const incrementWithObject = () => setState({count: count + step})
+
+  return (
+    <>
+      <button className={'buttonOne'} onClick={incrementWithFunction}>
+        {count}
+      </button>
+      <button className={'buttonTwo'} onClick={incrementWithObject}>
+        {count}
+      </button>
+    </>
+  )
 }
 
 function App() {
