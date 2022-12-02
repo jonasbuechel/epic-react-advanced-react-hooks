@@ -3,33 +3,44 @@
 
 import * as React from 'react'
 
-const countReducer = (state, newState) => {
-  if (typeof newState === 'function') {
-    return {...state, ...newState(state)}
+const countReducer = (state, action) => {
+  switch (action.type) {
+    case 'INCREMENT':
+      return {
+        ...state,
+        count: state.count + action.step,
+      }
+    case 'DECREMENT':
+      return {
+        ...state,
+        count: state.count - action.step,
+      }
+    default:
+      throw new Error(`Unsupported action type: ${action.type}`)
   }
-
-  return {...state, ...newState}
 }
 
 function Counter({initialCount = 0, step = 1}) {
-  const [state, setState] = React.useReducer(countReducer, {
+  const [state, dispatch] = React.useReducer(countReducer, {
     count: initialCount,
-    iShouldNotGetLost: 'here I am',
   })
-
   const {count} = state
-  const incrementWithFunction = () =>
-    setState(currentState => ({count: currentState.count + step}))
-
-  const incrementWithObject = () => setState({count: count + step})
+  const increment = () => dispatch({type: 'INCREMENT', step})
+  const decrement = () => dispatch({type: 'DECREMENT', step})
 
   return (
     <>
-      <button className={'buttonOne'} onClick={incrementWithFunction}>
-        {count}
+      <button className={'decrement'} onClick={decrement}>
+        -
       </button>
-      <button className={'buttonTwo'} onClick={incrementWithObject}>
+      <span
+        className={'count'}
+        style={{width: '2em', display: 'inline-block', textAlign: 'center'}}
+      >
         {count}
+      </span>
+      <button className={'increment'} onClick={increment}>
+        +
       </button>
     </>
   )
