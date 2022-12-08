@@ -29,9 +29,10 @@ function asyncReducer(state, action) {
 
 function useAsync(asyncCallback, initialState, dependencies) {
   const [state, dispatch] = React.useReducer(asyncReducer, {
-    status: 'pending',
+    status: 'idle',
     data: null,
     error: null,
+    ...initialState,
   })
 
   React.useEffect(() => {
@@ -63,9 +64,7 @@ function PokemonInfo({pokemonName}) {
       }
       return fetchPokemon(pokemonName)
     },
-    {
-      /* initial state */
-    },
+    {status: pokemonName ? 'pending' : 'idle'},
     [pokemonName],
   )
 
